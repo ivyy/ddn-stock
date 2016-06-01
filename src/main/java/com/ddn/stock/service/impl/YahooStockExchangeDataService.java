@@ -1,19 +1,13 @@
 package com.ddn.stock.service.impl;
 
-import com.ddn.stock.domain.StockExchangeData;
+import com.ddn.stock.domain.Exchange;
 import com.ddn.stock.service.StockExchangeDataService;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.http.HttpHost;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.fluent.Executor;
+import com.ddn.stock.util.YahooExchangeDataParser;
 import org.apache.http.client.fluent.Request;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Created by chenzi on 5/31/2016.
@@ -29,24 +23,23 @@ public class YahooStockExchangeDataService implements StockExchangeDataService {
   //all: http://table.finance.yahoo.com/table.csv?s=600000.ss
 
   @Override
-  public StockExchangeData[] getAllHistoricalData(String stockCode) {
+  public Exchange[] getAllHistoricalData(String stockCode) {
     String url = BASE_URL + stockCode;
+
+    InputStream in = null;
     try {
-      InputStream in = Request.Get(url).execute().returnContent().asStream();
-      Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader("Date", "Open", "High","Low", "Close", "Volume", "Adj Close")
-          .parse(new InputStreamReader(in));
-      for (CSVRecord record:records) {
-        String date = record.get("Date");
-        float open = Float.parseFloat(record.get("Open"));
-        float close = Float.parseFloat(record.get("Close"));
-        float high = Float.parseFloat(record.get("High"));
-        float low = Float.parseFloat(record.get("Low"));
-        float volume = Float.parseFloat(record.get("Volume"));
-        float adjClose = Float.parseFloat(record.get("Adj Close"));
-      }
+      in = Request.Get(url).execute().returnContent().asStream();
+      return YahooExchangeDataParser.parse(in);
     } catch (IOException ioe) {
       ioe.printStackTrace();
+    }finally {
+      try {
+        in.close();
+      }catch (Exception e) {
+        e.printStackTrace();
+      }
     }
-    return new StockExchangeData[0];
+    //or return empty data
+    return new Exchange[0];
   }
 }
