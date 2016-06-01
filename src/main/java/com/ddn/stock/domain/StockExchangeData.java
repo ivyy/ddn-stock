@@ -4,12 +4,21 @@ package com.ddn.stock.domain;
  * Created by chenzi on 5/31/2016.
  */
 public class StockExchangeData {
+  private String stockCode;
   private String date;
   private float open;
   private float close;
   private float high;
   private float low;
   private float volume;
+
+  public String getStockCode() {
+    return stockCode;
+  }
+
+  public void setStockCode(String stockCode) {
+    this.stockCode = stockCode;
+  }
 
   public String getDate() {
     return date;
