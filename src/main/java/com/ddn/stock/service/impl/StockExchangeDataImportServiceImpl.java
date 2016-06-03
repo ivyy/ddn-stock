@@ -17,7 +17,7 @@ import java.io.InputStream;
 @Service
 public class StockExchangeDataImportServiceImpl implements StockExchangeDataImportService {
 
-  @Value("${stock.exchange.data.folder}")
+  @Value("${stock.exchange.csvFolder}")
   private String csvFileFolder;
 
   @Override

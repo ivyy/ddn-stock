@@ -1,8 +1,6 @@
 package com.ddn.stock.domain;
 
-/**
- * Created by chenzi on 5/31/2016.
- */
+
 public class Exchange {
   private String stockCode;
   private String date;
@@ -49,5 +47,4 @@ public class Exchange {
   public float getVolume() {
     return volume;
   }
-
 }

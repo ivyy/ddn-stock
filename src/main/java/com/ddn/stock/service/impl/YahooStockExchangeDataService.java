@@ -29,7 +29,7 @@ public class YahooStockExchangeDataService implements StockExchangeDataService {
     InputStream in = null;
     try {
       in = Request.Get(url).execute().returnContent().asStream();
-      return YahooExchangeDataParser.parse(in);
+      return YahooExchangeDataParser.parse(stockCode, in);
     } catch (IOException ioe) {
       ioe.printStackTrace();
     }finally {
