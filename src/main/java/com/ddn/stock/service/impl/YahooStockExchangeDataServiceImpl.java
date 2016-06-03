@@ -11,11 +11,11 @@ import java.io.InputStream;
 
 /**
  * Created by chenzi on 5/31/2016.
- *
+ * <p/>
  * This service reads data from Yahoo API directly
  */
 @Service
-public class YahooStockExchangeDataService implements StockExchangeDataService {
+public class YahooStockExchangeDataServiceImpl implements StockExchangeDataService {
 
   private static final String BASE_URL = "http://table.finance.yahoo.com/table.csv?s=";
 
@@ -26,20 +26,13 @@ public class YahooStockExchangeDataService implements StockExchangeDataService {
   public Exchange[] getAllHistoricalData(String stockCode) {
     String url = BASE_URL + stockCode;
 
-    InputStream in = null;
-    try {
-      in = Request.Get(url).execute().returnContent().asStream();
-      return YahooExchangeDataParser.parse(in);
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }finally {
-      try {
-        in.close();
-      }catch (Exception e) {
-        e.printStackTrace();
-      }
+    try (InputStream inputStream = Request.Get(url).execute().returnContent().asStream()) {
+      return YahooExchangeDataParser.parse(stockCode, inputStream);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-    //or return empty data
+
+    //Or else return empty data
     return new Exchange[0];
   }
 }

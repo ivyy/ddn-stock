@@ -6,10 +6,7 @@ import com.ddn.stock.util.YahooExchangeDataParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Created by chenzi on 6/1/2016.
@@ -32,22 +29,13 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
       });
 
       for (File csvFile : csvFiles) {
-        InputStream in = null;
-        try {
-          in = new FileInputStream(csvFile);
+        try (InputStream in = new FileInputStream(csvFile)) {
           String stockCode = csvFile.getName().replace(".csv", "");
           Exchange[] exchanges = YahooExchangeDataParser.parse(stockCode, in);
-          //TODO:save it to database
-        } catch (Exception e) {
-          e.printStackTrace();
-        } finally {
-          if (in != null) {
-            try {
-              in.close();
-            } catch (Exception e) {
-
-            }
-          }
+          //TODO: Save it to monogodb
+          System.out.println(exchanges);
+        } catch (IOException ioe) {
+          ioe.printStackTrace();
         }
       }
     }
