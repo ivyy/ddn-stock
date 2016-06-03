@@ -16,7 +16,9 @@ import java.util.List;
 public class YahooExchangeDataParser {
   //parse from an InputStream
   public static Exchange[] parse(String stockCode, InputStream in) throws IOException {
-    Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader("Date", "Open", "High", "Low", "Close", "Volume", "Adj Close")
+    Iterable<CSVRecord> records = CSVFormat.RFC4180
+        .withHeader("Date", "Open", "High", "Low", "Close", "Volume", "Adj Close")
+        .withSkipHeaderRecord()
         .parse(new InputStreamReader(in));
 
     List<Exchange> exchanges = new ArrayList<>();

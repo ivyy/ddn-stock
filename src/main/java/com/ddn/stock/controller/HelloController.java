@@ -1,6 +1,7 @@
 package com.ddn.stock.controller;
 
 import com.ddn.stock.domain.Stock;
+import com.ddn.stock.domain.Exchange;
 import com.ddn.stock.service.StockExchangeDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,7 +23,6 @@ public class HelloController {
 
   @RequestMapping("/world")
   public String helloWorld() {
-    //Stock stock = mongoTemplate.find(Query.query())
     Stock s = mongoTemplate.findOne(query(where("code").is("600000")), Stock.class);
     if (s == null) {
       Stock stock = new Stock("600000", "ss", "600000.ss", "PU FA BANK");
