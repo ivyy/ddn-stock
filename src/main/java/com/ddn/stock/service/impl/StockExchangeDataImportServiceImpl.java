@@ -2,11 +2,16 @@ package com.ddn.stock.service.impl;
 
 import com.ddn.stock.domain.Exchange;
 import com.ddn.stock.service.StockExchangeDataImportService;
+import com.ddn.stock.service.StockExchangeDataService;
 import com.ddn.stock.util.YahooExchangeDataParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by chenzi on 6/1/2016.
@@ -17,8 +22,18 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
   @Value("${stock.exchange.csvFolder}")
   private String csvFileFolder;
 
+  @Value("${stock.samples}")
+  private String stockCodeList;
+
+  @Autowired
+  private MongoTemplate mongoTemplate;
+
+  @Autowired
+  private StockExchangeDataService stockExchangeDataService;
+
   @Override
-  public void fromCSV() {
+  public void fromLocalCSV() {
+
     File file = new File(csvFileFolder);
     if (file.exists() && file.isDirectory()) {
       File[] csvFiles = file.listFiles(new FilenameFilter() {
@@ -31,7 +46,7 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
       for (File csvFile : csvFiles) {
         try (InputStream in = new FileInputStream(csvFile)) {
           String stockCode = csvFile.getName().replace(".csv", "");
-          Exchange[] exchanges = YahooExchangeDataParser.parse(stockCode, in);
+          List<Exchange> exchanges = YahooExchangeDataParser.parse(stockCode, in);
           //TODO: Save it to monogodb
           System.out.println(exchanges);
         } catch (IOException ioe) {
@@ -39,5 +54,14 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
         }
       }
     }
+  }
+
+  @Override
+  public void fromYahoo() {
+    for (String stockCode:stockCodeList.trim().split(",")) {
+      List<Exchange> exchanges = stockExchangeDataService.getAllHistoricalData(stockCode);
+      mongoTemplate.insert(exchanges, Exchange.class);
+    }
+
   }
 }

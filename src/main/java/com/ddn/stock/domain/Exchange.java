@@ -2,6 +2,7 @@ package com.ddn.stock.domain;
 
 
 public class Exchange {
+  private String id;
   private String stockCode;
   private String date;
   private float open;
@@ -46,5 +47,41 @@ public class Exchange {
 
   public float getVolume() {
     return volume;
+  }
+
+  public void setStockCode(String stockCode) {
+    this.stockCode = stockCode;
+  }
+
+  public void setDate(String date) {
+    this.date = date;
+  }
+
+  public void setOpen(float open) {
+    this.open = open;
+  }
+
+  public void setClose(float close) {
+    this.close = close;
+  }
+
+  public void setHigh(float high) {
+    this.high = high;
+  }
+
+  public void setLow(float low) {
+    this.low = low;
+  }
+
+  public void setVolume(float volume) {
+    this.volume = volume;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 }

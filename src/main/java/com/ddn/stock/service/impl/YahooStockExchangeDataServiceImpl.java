@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Created by chenzi on 5/31/2016.
- * <p/>
+ *
  * This service reads data from Yahoo API directly
  */
 @Service
@@ -23,15 +24,14 @@ public class YahooStockExchangeDataServiceImpl implements StockExchangeDataServi
   //all: http://table.finance.yahoo.com/table.csv?s=600000.ss
 
   @Override
-  public Exchange[] getAllHistoricalData(String stockCode) {
+  public List<Exchange> getAllHistoricalData(String stockCode) {
     String url = BASE_URL + stockCode;
     try (InputStream inputStream = Request.Get(url).execute().returnContent().asStream()) {
       return YahooExchangeDataParser.parse(stockCode, inputStream);
     } catch (Exception e) {
       e.printStackTrace();
     }
-
     //Or else return empty data
-    return new Exchange[0];
+    return Collections.emptyList();
   }
 }
