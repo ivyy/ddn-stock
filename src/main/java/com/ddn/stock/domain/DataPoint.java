@@ -1,8 +1,8 @@
 package com.ddn.stock.domain;
 
 public class DataPoint {
-  String date;
-  float value;
+  private String date;
+  private float value;
 
   public DataPoint(String date, float value) {
     this.date = date;

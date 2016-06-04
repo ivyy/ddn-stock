@@ -1,9 +1,9 @@
 package com.ddn.stock.domain;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 /*
   A TimeSeries contains a list of data points order by dates ascending
@@ -12,11 +12,23 @@ public class TimeSeries {
 
   private DataPoint[] points;
 
+  private Map<String, DataPoint> map = new HashMap<>();
+
   public static final TimeSeries EMPTY_SERIAL = new TimeSeries(new DataPoint[0]);
 
   public TimeSeries(DataPoint[] points) {
     Arrays.sort(points, (DataPoint p1, DataPoint p2) -> p1.getDate().compareTo(p2.getDate()));
     this.points = points;
+    Stream.of(this.points).forEach(p -> map.put(p.getDate(), p));
+  }
+
+  public TimeSeries betweenDate(String fromDate, String toDate) {
+    DataPoint[] dataPoints = Stream.of(this.points)
+        .filter((DataPoint p) ->
+            p.getDate().compareTo(fromDate) >= 0 && p.getDate().compareTo(toDate) <= 0)
+        .toArray(size -> new DataPoint[size]);
+
+    return new TimeSeries(dataPoints);
   }
 
   public DataPoint[] getPoints() {
@@ -27,10 +39,20 @@ public class TimeSeries {
     return this.points.length;
   }
 
+  public float valueAt(String date) {
+    if (this.map.containsKey(date)) {
+      return map.get(date).getValue();
+    }
+
+    return 0.00f;
+  }
+
   @Override
   public String toString() {
     return "TimeSeries{" +
         "points=" + Arrays.toString(points) +
         '}';
   }
+
+
 }

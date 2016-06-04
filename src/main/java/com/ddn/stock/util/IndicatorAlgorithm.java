@@ -2,7 +2,9 @@ package com.ddn.stock.util;
 
 import com.ddn.stock.domain.DataPoint;
 import com.ddn.stock.domain.TimeSeries;
+import org.springframework.stereotype.Service;
 
+@Service
 public class IndicatorAlgorithm {
 
   public TimeSeries sma(TimeSeries series, int n) {
