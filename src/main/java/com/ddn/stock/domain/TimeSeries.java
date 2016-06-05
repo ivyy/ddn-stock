@@ -14,12 +14,17 @@ public class TimeSeries {
 
   private Map<String, DataPoint> map = new HashMap<>();
 
+  private Map<String, Integer> indexes = new HashMap<>();
+
   public static final TimeSeries EMPTY_SERIAL = new TimeSeries(new DataPoint[0]);
 
   public TimeSeries(DataPoint[] points) {
     Arrays.sort(points, (DataPoint p1, DataPoint p2) -> p1.getDate().compareTo(p2.getDate()));
     this.points = points;
     Stream.of(this.points).forEach(p -> map.put(p.getDate(), p));
+    for (int i = 0; i < this.points.length; i++) {
+      indexes.put(this.points[i].getDate(), i);
+    }
   }
 
   public TimeSeries betweenDate(String fromDate, String toDate) {
@@ -45,6 +50,14 @@ public class TimeSeries {
     }
 
     return 0.00f;
+  }
+
+  public int indexOfDate(String date) {
+    if (indexes.containsKey(date)) {
+      return indexes.get(date);
+    }
+
+    return -1;
   }
 
   @Override

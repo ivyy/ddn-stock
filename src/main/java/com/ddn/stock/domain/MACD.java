@@ -7,6 +7,8 @@ public class MACD {
   private TimeSeries dea;
   private TimeSeries macd;
 
+  private static final double ERROR = 0.001;
+
   public MACD(TimeSeries diff, TimeSeries dea) {
 
     this.diff = diff;
@@ -32,5 +34,32 @@ public class MACD {
 
   public TimeSeries getMacd() {
     return macd;
+  }
+
+  public boolean crossoverAt(String date) {
+    double diffValue = diff.valueAt(date);
+    double deaValue = diff.valueAt(date);
+
+    int i = diff.indexOfDate(date);
+    if (i > 0) {
+      return diff.getPoints()[i - 1].getValue() <= dea.getPoints()[i - 1].getValue()
+          && (diffValue >= deaValue);
+    }
+
+    return false;
+  }
+
+  public boolean deadCrossingAt(String date) {
+
+    double diffValue = diff.valueAt(date);
+    double deaValue = diff.valueAt(date);
+
+    int i = diff.indexOfDate(date);
+    if (i > 0) {
+      return diff.getPoints()[i - 1].getValue() >= dea.getPoints()[i - 1].getValue()
+          && (diffValue <= deaValue);
+    }
+
+    return false;
   }
 }
