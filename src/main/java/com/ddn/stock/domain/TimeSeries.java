@@ -48,8 +48,7 @@ public class TimeSeries {
     if (this.map.containsKey(date)) {
       return map.get(date).getValue();
     }
-
-    return 0.00f;
+    return Double.MIN_VALUE;
   }
 
   public int indexOfDate(String date) {
@@ -67,5 +66,101 @@ public class TimeSeries {
         '}';
   }
 
+  public TimeSeries sma(int n) {
+    if (n < 1) throw new IllegalArgumentException("n must be larger than 0 when calculation sma");
 
+    int length = length();
+    if (length < n) {
+      return TimeSeries.EMPTY_SERIAL;
+    }
+
+    DataPoint[] output = new DataPoint[length - n + 1];
+
+    float sum = 0f;
+    int i = 0, j = 0;
+
+    for (i = 0; i < length; i++) {
+      sum += points[i].getValue();
+      if (i == n - 1) {
+        output[j++] = new DataPoint(points[i].getDate(), sum / n);
+      } else if (i >= n) {
+        sum -= points[i - n].getValue();
+        output[j++] = new DataPoint(points[i].getDate(), sum / n);
+      }
+    }
+
+    return new TimeSeries(output);
+  }
+
+  public TimeSeries ema(int n) {
+
+    if (n < 1) {
+      return TimeSeries.EMPTY_SERIAL;
+    }
+
+    int length = length();
+
+    DataPoint[] output = new DataPoint[length];
+
+    float a = 2.0f / (n + 1);
+    int i = 0;
+
+    for (i = 0; i < length; i++) {
+      if (i == 0) {
+        output[i] = points[i];
+      } else {
+        output[i] = new DataPoint(points[i].getDate(),
+            a * (points[i].getValue() - output[i - 1].getValue()) + output[i - 1].getValue());
+      }
+    }
+
+    return new TimeSeries(output);
+  }
+
+  public MACD macd(MACDParam macdParam) {
+
+    DataPoint[] diff = new DataPoint[length()];
+
+    DataPoint[] low = ema(macdParam.getLow()).getPoints();
+    DataPoint[] high = ema(macdParam.getHigh()).getPoints();
+
+    for (int i = 0; i < length(); i++) {
+      diff[i] = new DataPoint(low[i].getDate(), low[i].getValue() - high[i].getValue());
+    }
+
+    TimeSeries diffTimeSeries = new TimeSeries(diff);
+    TimeSeries deaTimeSeries = diffTimeSeries.ema(macdParam.getMiddle());
+
+    return new MACD(diffTimeSeries, deaTimeSeries);
+  }
+
+  public boolean crossoverWith(TimeSeries other, String atDate) {
+
+    double thisCurrentValue = this.valueAt(atDate);
+    double otherCurrentValue = other.valueAt(atDate);
+
+    int i = this.indexOfDate(atDate);
+    if (i > 0) {
+      double thisLastValue = this.points[i-1].getValue();
+      double otherLastValue = other.getPoints()[i-1].getValue();
+      return thisLastValue <= otherLastValue && thisCurrentValue >= otherCurrentValue;
+    }
+
+    return false;
+  }
+
+  public boolean deadCrossingWith(TimeSeries other, String atDate) {
+
+    double thisCurrentValue = this.valueAt(atDate);
+    double otherCurrentValue = other.valueAt(atDate);
+
+    int i = this.indexOfDate(atDate);
+    if (i > 0) {
+      double thisLastValue = this.points[i-1].getValue();
+      double otherLastValue = other.getPoints()[i-1].getValue();
+      return thisLastValue >= otherLastValue && thisCurrentValue <= otherCurrentValue;
+    }
+
+    return false;
+  }
 }

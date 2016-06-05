@@ -3,7 +3,6 @@ package com.ddn.stock.integration;
 import com.ddn.stock.Application;
 import com.ddn.stock.domain.*;
 import com.ddn.stock.service.StockExchangeDataService;
-import com.ddn.stock.util.IndicatorAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,6 @@ public class IndicatorAlgorithmIntegrationTest {
   @Autowired
   private StockExchangeDataService stockExchangeDataService;
 
-  @Autowired
-  private IndicatorAlgorithm indicatorAlgorithm;
-
   @Test
   public void testMACDValue() {
     //fetch from Yahoo
@@ -36,13 +32,16 @@ public class IndicatorAlgorithmIntegrationTest {
         .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
         .toArray(size -> new DataPoint[size]);
 
-    MACD macd = indicatorAlgorithm.macd(new TimeSeries(dataPoints), MACDParam.DEFAULT);
+    TimeSeries closePriceTimeSeries = new TimeSeries(dataPoints);
+    MACD macd = closePriceTimeSeries.macd(MACDParam.DEFAULT);
 
     assertEquals(0.227, macd.getDiff().valueAt("2015-06-29"), 0.001);
     assertEquals(0.165, macd.getDiff().valueAt("2015-07-09"), 0.001);
     assertEquals(-0.691, macd.getDiff().valueAt("2015-08-18"), 0.001);
     assertEquals(-1.654, macd.getDiff().valueAt("2015-09-21"), 0.001);
     assertEquals(-0.055, macd.getDiff().valueAt("2016-06-03"), 0.001);
+    assertEquals(0.331, macd.getDea().valueAt("2016-04-11"), 0.001);
+    assertEquals(0, macd.getMacd().valueAt("2016-04-13"), 0.001);
   }
 
   @Test
@@ -53,11 +52,19 @@ public class IndicatorAlgorithmIntegrationTest {
         .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
         .toArray(size -> new DataPoint[size]);
 
-    MACD macd = indicatorAlgorithm.macd(new TimeSeries(dataPoints), MACDParam.DEFAULT);
+    TimeSeries closePriceTimeSeries = new TimeSeries(dataPoints);
 
+    TimeSeries ma5 = closePriceTimeSeries.sma(5);
+    TimeSeries ma10 = closePriceTimeSeries.sma(10);
+    //test MA crossing
+    assertTrue(ma5.crossoverWith(ma10, "2015-10-12"));
+    assertFalse(ma5.crossoverWith(ma10, "2015-10-11"));
+    assertTrue(ma5.deadCrossingWith(ma10, "2015-08-18"));
+
+    //assert MACD crossing
+    MACD macd = closePriceTimeSeries.macd(MACDParam.DEFAULT);
     assertTrue(macd.crossoverAt("2016-02-04"));
-    assertFalse(macd.crossoverAt("2016-02-17"));
-    assertTrue(macd.deadCrossingAt("2016-04-08"));
+    assertTrue(macd.deadCrossingAt("2016-04-18"));
   }
 
 }
