@@ -5,13 +5,13 @@ public class Exchange {
   private String id;
   private String stockCode;
   private String date;
-  private float open;
-  private float close;
-  private float high;
-  private float low;
-  private float volume;
+  private double open;
+  private double close;
+  private double high;
+  private double low;
+  private double volume;
 
-  public Exchange(String stockCode, String date, float open, float close, float high, float low, float volume) {
+  public Exchange(String stockCode, String date, double open, double close, double high, double low, double volume) {
     this.stockCode = stockCode;
     this.date = date;
     this.open = open;
@@ -29,23 +29,23 @@ public class Exchange {
     return date;
   }
 
-  public float getOpen() {
+  public double getOpen() {
     return open;
   }
 
-  public float getClose() {
+  public double getClose() {
     return close;
   }
 
-  public float getHigh() {
+  public double getHigh() {
     return high;
   }
 
-  public float getLow() {
+  public double getLow() {
     return low;
   }
 
-  public float getVolume() {
+  public double getVolume() {
     return volume;
   }
 
@@ -57,23 +57,23 @@ public class Exchange {
     this.date = date;
   }
 
-  public void setOpen(float open) {
+  public void setOpen(double open) {
     this.open = open;
   }
 
-  public void setClose(float close) {
+  public void setClose(double close) {
     this.close = close;
   }
 
-  public void setHigh(float high) {
+  public void setHigh(double high) {
     this.high = high;
   }
 
-  public void setLow(float low) {
+  public void setLow(double low) {
     this.low = low;
   }
 
-  public void setVolume(float volume) {
+  public void setVolume(double volume) {
     this.volume = volume;
   }
 

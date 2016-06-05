@@ -41,4 +41,6 @@ public class IndicatorAlgorithmUnitTest {
     TimeSeries sma10 = indicatorAlgorithm.sma(timeSeries,10);
     assertEquals(25.50f, sma10.valueAt("2016-06-03"), 0.01);
   }
+
+
 }

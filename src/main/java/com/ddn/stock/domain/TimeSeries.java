@@ -39,7 +39,7 @@ public class TimeSeries {
     return this.points.length;
   }
 
-  public float valueAt(String date) {
+  public double valueAt(String date) {
     if (this.map.containsKey(date)) {
       return map.get(date).getValue();
     }

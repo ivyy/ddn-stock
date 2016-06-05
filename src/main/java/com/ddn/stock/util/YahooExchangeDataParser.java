@@ -31,8 +31,12 @@ public class YahooExchangeDataParser {
       float low = Float.parseFloat(record.get("Low"));
       float volume = Float.parseFloat(record.get("Volume"));
       //float adjClose = Float.parseFloat(record.get("Adj Close"));
-      Exchange exchange = new Exchange(stockCode, date, open, close, high, low, volume);
-      exchanges.add(exchange);
+      //if volume == 0, then it's not exchanged that day
+      if (volume > 0) {
+        Exchange exchange = new Exchange(stockCode, date, open, close, high, low, volume);
+        exchanges.add(exchange);
+      }
+
     }
 
     return exchanges;

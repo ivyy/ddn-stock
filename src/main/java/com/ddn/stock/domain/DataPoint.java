@@ -2,9 +2,9 @@ package com.ddn.stock.domain;
 
 public class DataPoint {
   private String date;
-  private float value;
+  private double value;
 
-  public DataPoint(String date, float value) {
+  public DataPoint(String date, double value) {
     this.date = date;
     this.value = value;
   }
@@ -17,11 +17,11 @@ public class DataPoint {
     this.date = date;
   }
 
-  public float getValue() {
+  public double getValue() {
     return value;
   }
 
-  public void setValue(float value) {
+  public void setValue(double value) {
     this.value = value;
   }
 
