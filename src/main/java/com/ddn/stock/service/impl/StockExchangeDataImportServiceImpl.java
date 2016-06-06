@@ -2,7 +2,7 @@ package com.ddn.stock.service.impl;
 
 import com.ddn.stock.domain.Exchange;
 import com.ddn.stock.service.StockExchangeDataImportService;
-import com.ddn.stock.service.StockExchangeDataService;
+import com.ddn.stock.service.YahooStockExchangeDataService;
 import com.ddn.stock.util.YahooExchangeDataParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,7 +28,7 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
   private MongoTemplate mongoTemplate;
 
   @Autowired
-  private StockExchangeDataService stockExchangeDataService;
+  private YahooStockExchangeDataService yahooStockExchangeDataService;
 
   @Override
   public void fromLocalCSV() {
@@ -58,8 +57,9 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
 
   @Override
   public void fromYahoo() {
+    mongoTemplate.dropCollection(Exchange.class);
     for (String stockCode:stockCodeList.trim().split(",")) {
-      List<Exchange> exchanges = stockExchangeDataService.getAllHistoricalData(stockCode);
+      List<Exchange> exchanges = yahooStockExchangeDataService.getAllHistoricalData(stockCode);
       mongoTemplate.insert(exchanges, Exchange.class);
     }
 

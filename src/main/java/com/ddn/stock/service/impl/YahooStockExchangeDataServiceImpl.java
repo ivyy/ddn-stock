@@ -1,12 +1,11 @@
 package com.ddn.stock.service.impl;
 
 import com.ddn.stock.domain.Exchange;
-import com.ddn.stock.service.StockExchangeDataService;
+import com.ddn.stock.service.YahooStockExchangeDataService;
 import com.ddn.stock.util.YahooExchangeDataParser;
 import org.apache.http.client.fluent.Request;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
  * This service reads data from Yahoo API directly
  */
 @Service
-public class YahooStockExchangeDataServiceImpl implements StockExchangeDataService {
+public class YahooStockExchangeDataServiceImpl implements YahooStockExchangeDataService {
 
   private static final String BASE_URL = "http://table.finance.yahoo.com/table.csv?s=";
 

@@ -134,6 +134,10 @@ public class TimeSeries {
     return new MACD(diffTimeSeries, deaTimeSeries);
   }
 
+  public MACD macd() {
+    return macd(MACDParam.DEFAULT);
+  }
+
   public boolean crossoverWith(TimeSeries other, String atDate) {
 
     double thisCurrentValue = this.valueAt(atDate);

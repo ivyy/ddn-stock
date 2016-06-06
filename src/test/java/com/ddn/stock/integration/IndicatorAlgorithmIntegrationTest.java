@@ -2,7 +2,7 @@ package com.ddn.stock.integration;
 
 import com.ddn.stock.Application;
 import com.ddn.stock.domain.*;
-import com.ddn.stock.service.StockExchangeDataService;
+import com.ddn.stock.service.YahooStockExchangeDataService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,12 @@ public class IndicatorAlgorithmIntegrationTest {
 
 
   @Autowired
-  private StockExchangeDataService stockExchangeDataService;
+  private YahooStockExchangeDataService yahooStockExchangeDataService;
 
   @Test
   public void testMACDValue() {
     //fetch from Yahoo
-    List<Exchange> exchangeList = stockExchangeDataService.getAllHistoricalData("601211.ss");
+    List<Exchange> exchangeList = yahooStockExchangeDataService.getAllHistoricalData("601211.ss");
 
     DataPoint[] dataPoints = exchangeList.stream()
         .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
@@ -47,7 +47,7 @@ public class IndicatorAlgorithmIntegrationTest {
   @Test
   public void testCrossover() {
     //fetch from Yahoo
-    List<Exchange> exchangeList = stockExchangeDataService.getAllHistoricalData("601211.ss");
+    List<Exchange> exchangeList = yahooStockExchangeDataService.getAllHistoricalData("601211.ss");
     DataPoint[] dataPoints = exchangeList.stream()
         .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
         .toArray(size -> new DataPoint[size]);
