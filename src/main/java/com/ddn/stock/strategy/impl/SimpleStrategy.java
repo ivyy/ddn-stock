@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.atomic.DoubleAccumulator;
 
 public class SimpleStrategy implements Strategy {
 
@@ -21,12 +24,10 @@ public class SimpleStrategy implements Strategy {
 
   private long lot = 0;
 
-  @Autowired
-  private MongoTemplate mongoTemplate;
-
-  public SimpleStrategy(String stockCode) {
+  public SimpleStrategy(String stockCode, Exchange[] exchanges) {
     this.stockCode = stockCode;
-    this.exchanges = mongoTemplate.findAll(Exchange.class).toArray(new Exchange[0]);
+    Arrays.sort(exchanges, (s,t) -> s.getDate().compareTo(t.getDate()));
+    this.exchanges = exchanges;
   }
 
   @Override
@@ -34,6 +35,7 @@ public class SimpleStrategy implements Strategy {
     TimeSeries closePriceTimeSeries = new TimeSeries(
         Arrays.stream(exchanges)
             .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
+            .sorted((s,t) -> s.getDate().compareTo(t.getDate()))
             .toArray(size -> new DataPoint[size]));
 
     TimeSeries ma10TimeSeries = closePriceTimeSeries.sma(10);
@@ -46,14 +48,17 @@ public class SimpleStrategy implements Strategy {
       double open = exchanges[i].getOpen();
       String date = exchanges[i].getDate();
       double ma10 = ma10TimeSeries.valueAt(date);
-      double lastMa10 = ma10TimeSeries.getPoints()[ma10TimeSeries.indexOfDate(date) - 1].getValue();
+      double lastMa10 = ma10;
+      if (ma10 != Double.MIN_VALUE) {
+        ma10TimeSeries.getPoints()[ma10TimeSeries.indexOfDate(date) - 1].getValue();
+      }
       double macd = macdTimeSeries.getMacd().valueAt(date);
 
-      if (close >= open && close > ma10 && macd > 0 && ma10 >= lastMa10) {
+      if (close >= open && close > ma10 && macd > 0 && (ma10 != Double.MIN_VALUE && ma10 >= lastMa10)) {
         buy(date, close);
       }
 
-      if (ma10 < lastMa10 && close <= open && close < ma10 && (ma10 - close) / ma10 > 0.08) {
+      if (ma10 != Double.MIN_VALUE && ma10 < lastMa10 && close <= open && close < ma10 && (ma10 - close) / ma10 > 0.08) {
         sell(date, close);
       }
 

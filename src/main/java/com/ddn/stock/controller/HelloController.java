@@ -1,9 +1,12 @@
 package com.ddn.stock.controller;
 
+import com.ddn.stock.domain.Exchange;
 import com.ddn.stock.domain.Stock;
 import com.ddn.stock.service.StockExchangeDataImportService;
+import com.ddn.stock.strategy.impl.SimpleStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,5 +44,12 @@ public class HelloController {
   @RequestMapping("/import")
   public void importData() {
     stockExchangeDataImportService.fromYahoo();
+  }
+
+  @RequestMapping("/analyze/{stockCode:.+}")
+  public void analyze(@PathVariable String stockCode) {
+    Exchange[] exchanges = mongoTemplate.find(query(where("stockCode").is(stockCode)), Exchange.class).toArray(new Exchange[0]);
+    SimpleStrategy simpleStrategy = new SimpleStrategy(stockCode, exchanges);
+    simpleStrategy.apply();
   }
 }
