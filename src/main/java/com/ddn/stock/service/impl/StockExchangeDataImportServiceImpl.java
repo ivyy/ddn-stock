@@ -32,7 +32,7 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
 
   @Override
   public void fromLocalCSV() {
-
+    mongoTemplate.dropCollection(Exchange.class);
     File file = new File(csvFileFolder);
     if (file.exists() && file.isDirectory()) {
       File[] csvFiles = file.listFiles(new FilenameFilter() {
@@ -47,7 +47,7 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
           String stockCode = csvFile.getName().replace(".csv", "");
           List<Exchange> exchanges = YahooExchangeDataParser.parse(stockCode, in);
           //TODO: Save it to monogodb
-          System.out.println(exchanges);
+          mongoTemplate.insert(exchanges, Exchange.class);
         } catch (IOException ioe) {
           ioe.printStackTrace();
         }

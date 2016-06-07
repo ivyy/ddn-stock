@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -25,7 +26,7 @@ public class HelloController {
   @Autowired
   private StockExchangeDataImportService stockExchangeDataImportService;
 
-  @RequestMapping("/world")
+  @RequestMapping(value = "/world", method = RequestMethod.GET)
   public String helloWorld() {
     Stock s = mongoTemplate.findOne(query(where("code").is("600000")), Stock.class);
     if (s == null) {
@@ -41,12 +42,17 @@ public class HelloController {
     return "<h1>hello world</h1>";
   }
 
-  @RequestMapping("/import")
+  @RequestMapping(value = "/import/yahoo", method = RequestMethod.GET)
   public void importData() {
     stockExchangeDataImportService.fromYahoo();
   }
 
-  @RequestMapping("/analyze/{stockCode:.+}")
+  @RequestMapping(value = "/import/csv", method = RequestMethod.GET)
+  public void importCsv() {
+    stockExchangeDataImportService.fromLocalCSV();
+  }
+
+  @RequestMapping(value = "/analyze/{stockCode:.+}", method = RequestMethod.GET)
   public void analyze(@PathVariable String stockCode) {
     Exchange[] exchanges = mongoTemplate.find(query(where("stockCode").is(stockCode)), Exchange.class).toArray(new Exchange[0]);
     SimpleStrategy simpleStrategy = new SimpleStrategy(stockCode, exchanges);

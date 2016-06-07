@@ -21,6 +21,7 @@ public class TimeSeries {
   public TimeSeries(DataPoint[] points) {
     Arrays.sort(points, (DataPoint p1, DataPoint p2) -> p1.getDate().compareTo(p2.getDate()));
     this.points = points;
+    //A TimeSeries must with date ascending
     Stream.of(this.points).forEach(p -> map.put(p.getDate(), p));
     for (int i = 0; i < this.points.length; i++) {
       indexes.put(this.points[i].getDate(), i);
@@ -48,7 +49,7 @@ public class TimeSeries {
     if (this.map.containsKey(date)) {
       return map.get(date).getValue();
     }
-    return Double.MIN_VALUE;
+    return Double.MAX_VALUE;
   }
 
   public int indexOfDate(String date) {
@@ -67,21 +68,20 @@ public class TimeSeries {
   }
 
   public TimeSeries sma(int n) {
-    if (n < 1) throw new IllegalArgumentException("n must be larger than 0 when calculation sma");
+    if (n < 1) throw new IllegalArgumentException("n must be larger than 0");
 
     int length = length();
-    if (length < n) {
-      return TimeSeries.EMPTY_SERIAL;
-    }
 
-    DataPoint[] output = new DataPoint[length - n + 1];
+    DataPoint[] output = new DataPoint[length];
 
-    float sum = 0f;
+    double sum = 0;
     int i = 0, j = 0;
 
     for (i = 0; i < length; i++) {
       sum += points[i].getValue();
-      if (i == n - 1) {
+      if (i < n - 1) {
+        output[j++] = new DataPoint(points[i].getDate(), Double.MAX_VALUE);
+      } else if (i == n - 1) {
         output[j++] = new DataPoint(points[i].getDate(), sum / n);
       } else if (i >= n) {
         sum -= points[i - n].getValue();
