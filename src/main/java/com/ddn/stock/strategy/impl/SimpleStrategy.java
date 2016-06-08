@@ -42,6 +42,7 @@ public class SimpleStrategy implements Strategy {
             .toArray(size -> new DataPoint[size]));
 
     TimeSeries ma10TimeSeries = closePriceTimeSeries.sma(10);
+    TimeSeries ma20TimeSeries = closePriceTimeSeries.sma(20);
     MACD macdTimeSeries = closePriceTimeSeries.macd();
 
     //assume every buy and sell with full principal
@@ -51,15 +52,18 @@ public class SimpleStrategy implements Strategy {
       double open = exchanges[i].getOpen();
       String date = exchanges[i].getDate();
       double ma10 = ma10TimeSeries.valueAt(date);
+      double ma20 = ma20TimeSeries.valueAt(date);
       double lastMa10 = ma10TimeSeries.getPoints()[ma10TimeSeries.indexOfDate(date) - 1].getValue();
-     // double macd = macdTimeSeries.getMacd().valueAt(date);
+      double macd = macdTimeSeries.getMacd().valueAt(date);
       double diff = macdTimeSeries.getDiff().valueAt(date);
 
-      if (close >= open && close > ma10  && ma10 > lastMa10 && (close / ma10 < 1.1) && diff > 0) {
+      if (close > open && close > ma10
+          && ma10 > lastMa10 && ma10 > ma20
+          && macd > 0) {
         buy(date, close);
       }
 
-      if ((ma10 < lastMa10 && close <= open && close < ma10) && ma10 / close > 1.1 || (buyPrice - close)/buyPrice >= 0.1 ) {
+      if ((ma10 <= lastMa10 && close < open && close < ma10 && (ma10 - close)/ma10 > 0.03) || (buyPrice - close) / buyPrice > 0.05) {
         if (lot > 0) {
           sell(date, close);
         }
@@ -67,7 +71,7 @@ public class SimpleStrategy implements Strategy {
 
       //sell anyway at last day
       if (lot > 0 && i == exchanges.length - 1) {
-        sell(date, close);
+          sell(date, close);
       }
     }
 

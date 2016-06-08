@@ -10,6 +10,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.sql.Time;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -65,6 +66,19 @@ public class IndicatorAlgorithmIntegrationTest {
     MACD macd = closePriceTimeSeries.macd(MACDParam.DEFAULT);
     assertTrue(macd.crossoverAt("2016-02-04"));
     assertTrue(macd.deadCrossingAt("2016-04-18"));
+  }
+
+  @Test
+  public void test_600549() {
+    List<Exchange> exchangeList = yahooStockExchangeDataService.getAllHistoricalData("600549.ss");
+    DataPoint[] dataPoints = exchangeList.stream()
+        .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
+        .toArray(size -> new DataPoint[size]);
+    TimeSeries closePriceTimeSeries = new TimeSeries(dataPoints);
+    TimeSeries ma10TimeSeries = closePriceTimeSeries.sma(10);
+    assertEquals(15.98, ma10TimeSeries.valueAt("2015-09-24"), 0.004);
+    double lastMa10 = ma10TimeSeries.getPoints()[ma10TimeSeries.indexOfDate("2015-09-24") - 1].getValue();
+    assertEquals(16.12, lastMa10, 0.004);
   }
 
 }

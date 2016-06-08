@@ -58,4 +58,12 @@ public class HelloController {
     SimpleStrategy simpleStrategy = new SimpleStrategy(stockCode, exchanges);
     simpleStrategy.apply();
   }
+
+//  @RequestMapping(value = "/analyze/{stockCode}/${fromDate}/${toDate}", method = RequestMethod.GET)
+//  public void analyzeRange(@PathVariable String stockCode, @PathVariable String fromDate, @PathVariable String toDate) {
+//    Exchange[] exchanges = mongoTemplate.find(query(where("stockCode")
+//        .is(stockCode).and("date").gt(fromDate).lt(toDate)), Exchange.class).toArray(new Exchange[0]);
+//    SimpleStrategy simpleStrategy = new SimpleStrategy(stockCode, exchanges);
+//    simpleStrategy.apply();
+//  }
 }
