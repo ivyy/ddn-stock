@@ -1,6 +1,5 @@
 package com.ddn.stock.domain;
 
-
 public class Stock {
   private String id;
   private String code;

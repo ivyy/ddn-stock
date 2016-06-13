@@ -81,6 +81,7 @@ public class SimpleStrategy implements Strategy {
   private void buy(String date, double price) {
     long toBuy = (new Double(this.principal / (price * 100))).longValue();
     if (toBuy > 0) {
+      this.oldPrincipal = this.principal;
       this.principal = this.principal - toBuy * price * 100;
       this.lot += toBuy;
       this.buyPrice = price;
