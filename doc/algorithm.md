@@ -28,3 +28,5 @@ EMAtoday= α * ( Pricetoday - EMAyesterday ) + EMAyesterday;
 
 http://baike.baidu.com/link?url=ysPMFiP_wjXjXFDuV-EBQ8YVQDztP7F4E2SrWyzFVsY3m-epJLFkX9A_6RYrcvTO1JYSsknXx9utYuPihfsuda
 http://zhidao.baidu.com/question/417909385.html
+
+

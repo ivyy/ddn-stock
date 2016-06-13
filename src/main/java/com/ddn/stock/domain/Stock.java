@@ -1,6 +1,5 @@
 package com.ddn.stock.domain;
 
-import lombok.Data;
 
 public class Stock {
   private String id;
