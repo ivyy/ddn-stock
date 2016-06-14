@@ -3,6 +3,7 @@ package com.ddn.stock.domain;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.stream.Stream;
 
 /*
@@ -145,8 +146,8 @@ public class TimeSeries {
 
     int i = this.indexOfDate(atDate);
     if (i > 0) {
-      double thisLastValue = this.points[i-1].getValue();
-      double otherLastValue = other.getPoints()[i-1].getValue();
+      double thisLastValue = this.points[i - 1].getValue();
+      double otherLastValue = other.getPoints()[i - 1].getValue();
       return thisLastValue <= otherLastValue && thisCurrentValue >= otherCurrentValue;
     }
 
@@ -160,8 +161,8 @@ public class TimeSeries {
 
     int i = this.indexOfDate(atDate);
     if (i > 0) {
-      double thisLastValue = this.points[i-1].getValue();
-      double otherLastValue = other.getPoints()[i-1].getValue();
+      double thisLastValue = this.points[i - 1].getValue();
+      double otherLastValue = other.getPoints()[i - 1].getValue();
       return thisLastValue >= otherLastValue && thisCurrentValue <= otherCurrentValue;
     }
 

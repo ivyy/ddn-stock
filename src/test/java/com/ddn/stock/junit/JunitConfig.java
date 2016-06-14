@@ -5,6 +5,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @EnableAutoConfiguration
-@ComponentScan(basePackages = {"com.ddn.stock.util","com.ddn.stock.service"})
+@ComponentScan(basePackages = {
+    "com.ddn.stock.util",
+    "com.ddn.stock.service",
+    "com.ddn.stock.indicator"
+})
 public class JunitConfig {
 }

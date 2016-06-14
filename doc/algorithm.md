@@ -30,3 +30,9 @@ http://baike.baidu.com/link?url=ysPMFiP_wjXjXFDuV-EBQ8YVQDztP7F4E2SrWyzFVsY3m-ep
 http://zhidao.baidu.com/question/417909385.html
 
 
+
+# KDJ
+
+参考资料：
+
+
