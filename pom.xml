@@ -77,19 +77,10 @@
       <artifactId>commons-csv</artifactId>
       <version>1.4</version>
     </dependency>
+
     <dependency>
       <groupId>org.easyrules</groupId>
       <artifactId>easyrules-core</artifactId>
-      <version>2.2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.easyrules</groupId>
-      <artifactId>easyrules-jmx</artifactId>
-      <version>2.2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.easyrules</groupId>
-      <artifactId>easyrules-spring</artifactId>
       <version>2.2.0</version>
     </dependency>
     <dependency>

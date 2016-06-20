@@ -5,14 +5,8 @@ import com.ddn.stock.domain.Exchange;
 import com.ddn.stock.domain.MACD;
 import com.ddn.stock.domain.TimeSeries;
 import com.ddn.stock.strategy.Strategy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.concurrent.atomic.DoubleAccumulator;
 
 public class SimpleStrategy implements Strategy {
 
@@ -29,16 +23,16 @@ public class SimpleStrategy implements Strategy {
 
   public SimpleStrategy(String stockCode, Exchange[] exchanges) {
     this.stockCode = stockCode;
-    Arrays.sort(exchanges, (s,t) -> s.getDate().compareTo(t.getDate()));
+    Arrays.sort(exchanges, (s, t) -> s.getDate().compareTo(t.getDate()));
     this.exchanges = exchanges;
   }
 
   @Override
-  public void apply() {
+  public void apply(String stockCode) {
     TimeSeries closePriceTimeSeries = new TimeSeries(
         Arrays.stream(exchanges)
             .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
-            .sorted((s,t) -> s.getDate().compareTo(t.getDate()))
+            .sorted((s, t) -> s.getDate().compareTo(t.getDate()))
             .toArray(size -> new DataPoint[size]));
 
     TimeSeries ma10TimeSeries = closePriceTimeSeries.sma(10);
@@ -63,7 +57,7 @@ public class SimpleStrategy implements Strategy {
         buy(date, close);
       }
 
-      if ((ma10 <= lastMa10 && close < open && close < ma10 && (ma10 - close)/ma10 > 0.03) || (buyPrice - close) / buyPrice > 0.05) {
+      if ((ma10 <= lastMa10 && close < open && close < ma10 && (ma10 - close) / ma10 > 0.03) || (buyPrice - close) / buyPrice > 0.05) {
         if (lot > 0) {
           sell(date, close);
         }
@@ -71,7 +65,7 @@ public class SimpleStrategy implements Strategy {
 
       //sell anyway at last day
       if (lot > 0 && i == exchanges.length - 1) {
-          sell(date, close);
+        sell(date, close);
       }
     }
 
@@ -81,7 +75,6 @@ public class SimpleStrategy implements Strategy {
   private void buy(String date, double price) {
     long toBuy = (new Double(this.principal / (price * 100))).longValue();
     if (toBuy > 0) {
-      this.oldPrincipal = this.principal;
       this.principal = this.principal - toBuy * price * 100;
       this.lot += toBuy;
       this.buyPrice = price;
@@ -95,7 +88,7 @@ public class SimpleStrategy implements Strategy {
 //    System.out.println("[" + date + "] sell " + lot + " lot at price: " + price + ", remaining principal: "
 //        + this.principal + " earning " + (this.principal - this.oldPrincipal)/ this.oldPrincipal * 100 + "%");
     System.out.println(String.format("[%s] sell %d lot at price: %.2f, remaining: %.2f, earning %.2f%%", date, lot, price, principal,
-        (this.principal - this.oldPrincipal)/ this.oldPrincipal * 100));
+        (this.principal - this.oldPrincipal) / this.oldPrincipal * 100));
     this.lot = 0;
     this.oldPrincipal = this.principal;
   }

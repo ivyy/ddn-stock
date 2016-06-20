@@ -56,7 +56,7 @@ public class HelloController {
   public void analyze(@PathVariable String stockCode) {
     Exchange[] exchanges = mongoTemplate.find(query(where("stockCode").is(stockCode)), Exchange.class).toArray(new Exchange[0]);
     SimpleStrategy simpleStrategy = new SimpleStrategy(stockCode, exchanges);
-    simpleStrategy.apply();
+    simpleStrategy.apply(stockCode);
   }
 
 //  @RequestMapping(value = "/analyze/{stockCode}/${fromDate}/${toDate}", method = RequestMethod.GET)

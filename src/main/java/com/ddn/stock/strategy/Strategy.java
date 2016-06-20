@@ -1,5 +1,5 @@
 package com.ddn.stock.strategy;
 
 public interface Strategy {
-  void apply();
+  void apply(String stockCode);
 }
