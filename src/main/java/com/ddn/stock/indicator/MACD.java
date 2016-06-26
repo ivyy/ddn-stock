@@ -1,4 +1,4 @@
-package com.ddn.stock.domain;
+package com.ddn.stock.indicator;
 
 
 public class MACD {
@@ -12,11 +12,11 @@ public class MACD {
     this.diff = diff;
     this.dea = dea;
 
-    DataPoint[] output = new DataPoint[diff.length()];
+    TimePoint[] output = new TimePoint[diff.length()];
 
     for (int i = 0; i < diff.length(); i++) {
       double value = (diff.getPoints()[i].getValue() - dea.getPoints()[i].getValue()) * 2;
-      output[i] = new DataPoint(diff.getPoints()[i].getDate(), value);
+      output[i] = new TimePoint(diff.getPoints()[i].getDate(), value);
     }
 
     this.macd = new TimeSeries(output);

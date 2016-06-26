@@ -1,4 +1,4 @@
-package com.ddn.stock.domain;
+package com.ddn.stock.indicator;
 
 public class MACDParam {
   private int low;

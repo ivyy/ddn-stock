@@ -1,6 +1,4 @@
-package com.ddn.stock.domain;
-
-import java.sql.Time;
+package com.ddn.stock.indicator;
 
 public class KDJ {
 

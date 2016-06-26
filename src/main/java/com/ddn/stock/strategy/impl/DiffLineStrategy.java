@@ -12,10 +12,8 @@ public class DiffLineStrategy implements Strategy {
   @Autowired
   private MongoTemplate mongoTemplate;
 
-
-  public DiffLineStrategy(PositionManager positionManager) {
-
-  }
+  @Autowired
+  private PositionManager positionManager;
 
   @Override
   public void apply(String stockCode) {

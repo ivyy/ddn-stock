@@ -1,11 +1,13 @@
-package com.ddn.stock.domain;
+package com.ddn.stock.indicator;
 
-import java.sql.Time;
+import com.ddn.stock.domain.Exchange;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class KLine {
+
   private Exchange[] exchanges;
 
   public KLine(List<Exchange> exchanges) {
@@ -19,10 +21,10 @@ public class KLine {
   }
 
   public TimeSeries closePriceTimeSeries() {
-    DataPoint[] dataPoints = Stream.of(exchanges)
-        .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
-        .toArray(size -> new DataPoint[size]);
-    return new TimeSeries(dataPoints);
+    TimePoint[] timePoints = Stream.of(exchanges)
+        .map(exchange -> new TimePoint(exchange.getDate(), exchange.getClose()))
+        .toArray(size -> new TimePoint[size]);
+    return new TimeSeries(timePoints);
   }
 
   public int length() {

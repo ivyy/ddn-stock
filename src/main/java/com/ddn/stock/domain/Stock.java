@@ -1,8 +1,5 @@
 package com.ddn.stock.domain;
 
-import java.util.List;
-import java.util.Map;
-
 public class Stock {
   private String id;
   private String code;
@@ -11,27 +8,11 @@ public class Stock {
   private String displayName;
   private String description;
 
-  //the daily exchange
-  private List<Exchange> exchangeList;
-  private Map<String, Object> indicators;
-
   public Stock(String code, String market, String displayName, String description) {
     this.code = code;
     this.market = market;
     this.displayName = displayName;
     this.description = description;
-  }
-
-  public Map<String, Object> getIndicators() {
-    return indicators;
-  }
-
-  public List<Exchange> getExchangeList() {
-    return exchangeList;
-  }
-
-  public void setExchangeList(List<Exchange> exchangeList) {
-    this.exchangeList = exchangeList;
   }
 
   public String getId() {

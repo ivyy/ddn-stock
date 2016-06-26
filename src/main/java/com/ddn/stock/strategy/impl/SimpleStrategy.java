@@ -1,9 +1,9 @@
 package com.ddn.stock.strategy.impl;
 
-import com.ddn.stock.domain.DataPoint;
+import com.ddn.stock.indicator.TimePoint;
 import com.ddn.stock.domain.Exchange;
-import com.ddn.stock.domain.MACD;
-import com.ddn.stock.domain.TimeSeries;
+import com.ddn.stock.indicator.MACD;
+import com.ddn.stock.indicator.TimeSeries;
 import com.ddn.stock.strategy.Strategy;
 
 import java.util.Arrays;
@@ -31,9 +31,9 @@ public class SimpleStrategy implements Strategy {
   public void apply(String stockCode) {
     TimeSeries closePriceTimeSeries = new TimeSeries(
         Arrays.stream(exchanges)
-            .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
+            .map(exchange -> new TimePoint(exchange.getDate(), exchange.getClose()))
             .sorted((s, t) -> s.getDate().compareTo(t.getDate()))
-            .toArray(size -> new DataPoint[size]));
+            .toArray(size -> new TimePoint[size]));
 
     TimeSeries ma10TimeSeries = closePriceTimeSeries.sma(10);
     TimeSeries ma20TimeSeries = closePriceTimeSeries.sma(20);

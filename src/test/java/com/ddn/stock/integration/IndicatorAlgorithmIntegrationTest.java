@@ -2,6 +2,10 @@ package com.ddn.stock.integration;
 
 import com.ddn.stock.Application;
 import com.ddn.stock.domain.*;
+import com.ddn.stock.indicator.MACD;
+import com.ddn.stock.indicator.MACDParam;
+import com.ddn.stock.indicator.TimePoint;
+import com.ddn.stock.indicator.TimeSeries;
 import com.ddn.stock.service.YahooStockExchangeDataService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +14,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.sql.Time;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -29,11 +32,11 @@ public class IndicatorAlgorithmIntegrationTest {
     //fetch from Yahoo
     List<Exchange> exchangeList = yahooStockExchangeDataService.getAllHistoricalData("601211.ss");
 
-    DataPoint[] dataPoints = exchangeList.stream()
-        .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
-        .toArray(size -> new DataPoint[size]);
+    TimePoint[] timePoints = exchangeList.stream()
+        .map(exchange -> new TimePoint(exchange.getDate(), exchange.getClose()))
+        .toArray(size -> new TimePoint[size]);
 
-    TimeSeries closePriceTimeSeries = new TimeSeries(dataPoints);
+    TimeSeries closePriceTimeSeries = new TimeSeries(timePoints);
     MACD macd = closePriceTimeSeries.macd(MACDParam.DEFAULT);
 
     assertEquals(0.227, macd.getDiff().valueAt("2015-06-29"), 0.001);
@@ -49,11 +52,11 @@ public class IndicatorAlgorithmIntegrationTest {
   public void testCrossover() {
     //fetch from Yahoo
     List<Exchange> exchangeList = yahooStockExchangeDataService.getAllHistoricalData("601211.ss");
-    DataPoint[] dataPoints = exchangeList.stream()
-        .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
-        .toArray(size -> new DataPoint[size]);
+    TimePoint[] timePoints = exchangeList.stream()
+        .map(exchange -> new TimePoint(exchange.getDate(), exchange.getClose()))
+        .toArray(size -> new TimePoint[size]);
 
-    TimeSeries closePriceTimeSeries = new TimeSeries(dataPoints);
+    TimeSeries closePriceTimeSeries = new TimeSeries(timePoints);
 
     TimeSeries ma5 = closePriceTimeSeries.sma(5);
     TimeSeries ma10 = closePriceTimeSeries.sma(10);
@@ -71,10 +74,10 @@ public class IndicatorAlgorithmIntegrationTest {
   @Test
   public void test_600549() {
     List<Exchange> exchangeList = yahooStockExchangeDataService.getAllHistoricalData("600549.ss");
-    DataPoint[] dataPoints = exchangeList.stream()
-        .map(exchange -> new DataPoint(exchange.getDate(), exchange.getClose()))
-        .toArray(size -> new DataPoint[size]);
-    TimeSeries closePriceTimeSeries = new TimeSeries(dataPoints);
+    TimePoint[] timePoints = exchangeList.stream()
+        .map(exchange -> new TimePoint(exchange.getDate(), exchange.getClose()))
+        .toArray(size -> new TimePoint[size]);
+    TimeSeries closePriceTimeSeries = new TimeSeries(timePoints);
     TimeSeries ma10TimeSeries = closePriceTimeSeries.sma(10);
     assertEquals(15.98, ma10TimeSeries.valueAt("2015-09-24"), 0.004);
     double lastMa10 = ma10TimeSeries.getPoints()[ma10TimeSeries.indexOfDate("2015-09-24") - 1].getValue();

@@ -1,10 +1,10 @@
-package com.ddn.stock.domain;
+package com.ddn.stock.indicator;
 
-public class DataPoint {
+public class TimePoint {
   private String date;
   private double value;
 
-  public DataPoint(String date, double value) {
+  public TimePoint(String date, double value) {
     this.date = date;
     this.value = value;
   }

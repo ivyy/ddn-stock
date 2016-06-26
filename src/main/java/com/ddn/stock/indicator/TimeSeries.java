@@ -1,9 +1,8 @@
-package com.ddn.stock.domain;
+package com.ddn.stock.indicator;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.stream.Stream;
 
 /*
@@ -11,16 +10,16 @@ import java.util.stream.Stream;
  */
 public class TimeSeries {
 
-  private DataPoint[] points;
+  private TimePoint[] points;
 
-  private Map<String, DataPoint> map = new HashMap<>();
+  private Map<String, TimePoint> map = new HashMap<>();
 
   private Map<String, Integer> indexes = new HashMap<>();
 
-  public static final TimeSeries EMPTY_SERIAL = new TimeSeries(new DataPoint[0]);
+  public static final TimeSeries EMPTY_SERIAL = new TimeSeries(new TimePoint[0]);
 
-  public TimeSeries(DataPoint[] points) {
-    Arrays.sort(points, (DataPoint p1, DataPoint p2) -> p1.getDate().compareTo(p2.getDate()));
+  public TimeSeries(TimePoint[] points) {
+    Arrays.sort(points, (TimePoint p1, TimePoint p2) -> p1.getDate().compareTo(p2.getDate()));
     this.points = points;
     //A TimeSeries must with date ascending
     Stream.of(this.points).forEach(p -> map.put(p.getDate(), p));
@@ -30,15 +29,15 @@ public class TimeSeries {
   }
 
   public TimeSeries betweenDate(String fromDate, String toDate) {
-    DataPoint[] dataPoints = Stream.of(this.points)
-        .filter((DataPoint p) ->
+    TimePoint[] timePoints = Stream.of(this.points)
+        .filter((TimePoint p) ->
             p.getDate().compareTo(fromDate) >= 0 && p.getDate().compareTo(toDate) <= 0)
-        .toArray(size -> new DataPoint[size]);
+        .toArray(size -> new TimePoint[size]);
 
-    return new TimeSeries(dataPoints);
+    return new TimeSeries(timePoints);
   }
 
-  public DataPoint[] getPoints() {
+  public TimePoint[] getPoints() {
     return points;
   }
 
@@ -73,7 +72,7 @@ public class TimeSeries {
 
     int length = length();
 
-    DataPoint[] output = new DataPoint[length];
+    TimePoint[] output = new TimePoint[length];
 
     double sum = 0;
     int i = 0, j = 0;
@@ -81,12 +80,12 @@ public class TimeSeries {
     for (i = 0; i < length; i++) {
       sum += points[i].getValue();
       if (i < n - 1) {
-        output[j++] = new DataPoint(points[i].getDate(), Double.MAX_VALUE);
+        output[j++] = new TimePoint(points[i].getDate(), Double.MAX_VALUE);
       } else if (i == n - 1) {
-        output[j++] = new DataPoint(points[i].getDate(), sum / n);
+        output[j++] = new TimePoint(points[i].getDate(), sum / n);
       } else if (i >= n) {
         sum -= points[i - n].getValue();
-        output[j++] = new DataPoint(points[i].getDate(), sum / n);
+        output[j++] = new TimePoint(points[i].getDate(), sum / n);
       }
     }
 
@@ -101,7 +100,7 @@ public class TimeSeries {
 
     int length = length();
 
-    DataPoint[] output = new DataPoint[length];
+    TimePoint[] output = new TimePoint[length];
 
     float a = 2.0f / (n + 1);
     int i = 0;
@@ -110,7 +109,7 @@ public class TimeSeries {
       if (i == 0) {
         output[i] = points[i];
       } else {
-        output[i] = new DataPoint(points[i].getDate(),
+        output[i] = new TimePoint(points[i].getDate(),
             a * (points[i].getValue() - output[i - 1].getValue()) + output[i - 1].getValue());
       }
     }
@@ -120,13 +119,13 @@ public class TimeSeries {
 
   public MACD macd(MACDParam macdParam) {
 
-    DataPoint[] diff = new DataPoint[length()];
+    TimePoint[] diff = new TimePoint[length()];
 
-    DataPoint[] low = ema(macdParam.getLow()).getPoints();
-    DataPoint[] high = ema(macdParam.getHigh()).getPoints();
+    TimePoint[] low = ema(macdParam.getLow()).getPoints();
+    TimePoint[] high = ema(macdParam.getHigh()).getPoints();
 
     for (int i = 0; i < length(); i++) {
-      diff[i] = new DataPoint(low[i].getDate(), low[i].getValue() - high[i].getValue());
+      diff[i] = new TimePoint(low[i].getDate(), low[i].getValue() - high[i].getValue());
     }
 
     TimeSeries diffTimeSeries = new TimeSeries(diff);
