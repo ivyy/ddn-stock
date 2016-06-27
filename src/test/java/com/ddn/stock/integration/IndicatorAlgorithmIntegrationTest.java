@@ -80,7 +80,7 @@ public class IndicatorAlgorithmIntegrationTest {
     TimeSeries closePriceTimeSeries = new TimeSeries(timePoints);
     TimeSeries ma10TimeSeries = closePriceTimeSeries.sma(10);
     assertEquals(15.98, ma10TimeSeries.valueAt("2015-09-24"), 0.004);
-    double lastMa10 = ma10TimeSeries.getPoints()[ma10TimeSeries.indexOfDate("2015-09-24") - 1].getValue();
+    double lastMa10 = ma10TimeSeries.getPoints()[ma10TimeSeries.indexOf("2015-09-24") - 1].getValue();
     assertEquals(16.12, lastMa10, 0.004);
   }
 

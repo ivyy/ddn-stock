@@ -2,6 +2,8 @@ package com.ddn.stock.filter;
 
 import com.ddn.stock.domain.Stock;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,5 +17,10 @@ public abstract class StockFilter {
     return stockList.parallelStream().filter(stock -> check(stock)).collect(Collectors.toList());
   }
 
-  abstract boolean check(Stock stock);
+  public final boolean check(Stock stock) {
+    Date date = new Date();
+    return checkAtDate(stock, String.format("%d-%d-%d", date.getYear(), date.getMonth(), date.getDate()));
+  }
+
+  abstract public boolean checkAtDate(Stock stock, String date);
 }

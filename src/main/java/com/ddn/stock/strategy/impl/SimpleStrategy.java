@@ -47,7 +47,7 @@ public class SimpleStrategy implements Strategy {
       String date = exchanges[i].getDate();
       double ma10 = ma10TimeSeries.valueAt(date);
       double ma20 = ma20TimeSeries.valueAt(date);
-      double lastMa10 = ma10TimeSeries.getPoints()[ma10TimeSeries.indexOfDate(date) - 1].getValue();
+      double lastMa10 = ma10TimeSeries.getPoints()[ma10TimeSeries.indexOf(date) - 1].getValue();
       double macd = macdTimeSeries.getMacd().valueAt(date);
       double diff = macdTimeSeries.getDiff().valueAt(date);
 
