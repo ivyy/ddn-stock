@@ -1,12 +1,10 @@
 package com.ddn.stock.integration;
 
 import com.ddn.stock.domain.mongo.History;
-import org.bson.types.ObjectId;
-import org.junit.Before;
+import com.ddn.stock.service.ImportService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -16,25 +14,27 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestPropertySource(locations = "classpath:application.properties")
-public class ApplicationIT {
+public class ImportServiceIT {
+
+  @Autowired
+  private ImportService importService;
 
   @Autowired
   private Datastore datastore;
 
-  @Before
-  public void before() {
-    //delete all history data
-    datastore.delete(datastore.createQuery(History.class));
+  @Test
+  public void testFromYahoo() {
+    String code = "600000.ss";
+    importService.fromYahoo("code");
+    long count = datastore.getCount(datastore.createQuery(History.class).field("code").equal(code));
+    assertTrue(count > 0);
   }
 
   @Test
-  public void testMorphia() {
-    History history = new History();
-    datastore.save(history);
-    Query<History> query = datastore.createQuery(History.class);
-
-    History h = query.field("date").equal("2016-01-01").get();
-    assertNotNull(h);
-    assertEquals(10.67,h.getOpen(),0.001);
+  public void testFromYahooBetween() {
+    String code = "600116.ss";
+    importService.fromYahoo(code, "2016-08-01","2016-09-01");
+    long count = datastore.getCount(datastore.createQuery(History.class).field("code").equal(code));
+    assertTrue(count > 0);
   }
 }

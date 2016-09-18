@@ -21,6 +21,9 @@ public class MorphiaConfig {
     final Morphia morphia = new Morphia();
     morphia.mapPackage("com.ddn.stock.domain.mongo");
     final Datastore datastore = morphia.createDatastore(new MongoClient(mongodbHost), database);
+    //call explicitly to ensure indexes
+    datastore.ensureIndexes();
+
     return datastore;
   }
 }
