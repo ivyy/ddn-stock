@@ -1,9 +1,7 @@
 package com.ddn.stock.filter;
 
-import com.ddn.stock.domain.Stock;
-import org.springframework.stereotype.Component;
+import com.ddn.stock.domain.mongo.Stock;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ComposedStockFilter extends StockFilter {

@@ -43,7 +43,7 @@ public class YahooDataServiceImpl implements YahooDataService {
       //float adjClose = Float.parseFloat(record.get("Adj Close"));
       //if volume == 0, then it's not exchanged that day
       if (volume > 0) {
-        YahooData yahooData = new YahooData(stockCode, date, open, close, high, low, volume);
+        YahooData yahooData = new YahooData(null, stockCode, date, open, close, high, low, volume);
         yahooDatas.add(yahooData);
       }
     }

@@ -1,12 +1,9 @@
 package com.ddn.stock.service.impl;
 
-import com.ddn.stock.domain.Stock;
+import com.ddn.stock.domain.mongo.Stock;
 import com.ddn.stock.service.StockService;
+import org.mongodb.morphia.Datastore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import static org.springframework.data.mongodb.core.query.Query.query;
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Update.update;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,25 +12,30 @@ import java.util.List;
 public class StockServiceImpl implements StockService {
 
   @Autowired
-  private MongoTemplate mongoTemplate;
+  private Datastore datastore;
 
   @Override
-  public void save(Stock stock) {
-    mongoTemplate.save(stock);
+  public void saveOrUpdate(Stock stock) {
+    datastore.save(stock);
   }
 
   @Override
   public Stock findOne(String stockCode) {
-    return mongoTemplate.findOne(query(where("code").is(stockCode)), Stock.class);
+    return datastore.createQuery(Stock.class).field("code").equal(stockCode).get();
   }
 
   @Override
   public List<Stock> findAll() {
-    return mongoTemplate.findAll(Stock.class);
+    return datastore.find(Stock.class).asList();
   }
 
   @Override
-  public List<Stock> findByMarket(String market) {
-    return mongoTemplate.find(query(where("market").is(market)), Stock.class);
+  public void delete(String stockCode) {
+    datastore.findAndDelete(datastore.createQuery(Stock.class).field("code").equal(stockCode));
+  }
+
+  @Override
+  public void deleteAll() {
+    datastore.delete(datastore.createQuery(Stock.class));
   }
 }

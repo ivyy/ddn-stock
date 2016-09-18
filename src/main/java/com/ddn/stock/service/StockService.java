@@ -1,12 +1,13 @@
 package com.ddn.stock.service;
 
-import com.ddn.stock.domain.Stock;
+import com.ddn.stock.domain.mongo.Stock;
 
 import java.util.List;
 
 public interface StockService {
-  void save(Stock stock);
+  void saveOrUpdate(Stock stock);
   Stock findOne(String stockCode);
   List<Stock> findAll();
-  List<Stock> findByMarket(String market);
+  void delete(String stockCode);
+  void deleteAll();
 }

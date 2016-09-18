@@ -1,10 +1,8 @@
 package com.ddn.stock.filter;
 
-import com.ddn.stock.domain.Stock;
+import com.ddn.stock.domain.mongo.Stock;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
