@@ -2,16 +2,19 @@ package com.ddn.stock.service.impl;
 
 import com.ddn.stock.domain.YahooData;
 import com.ddn.stock.service.YahooDataService;
-import com.ddn.stock.util.YahooExchangeDataParser;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.http.client.fluent.Request;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- *
  * This service reads data from Yahoo API directly
  */
 @Service
@@ -22,9 +25,35 @@ public class YahooDataServiceImpl implements YahooDataService {
   //slice: "http://table.finance.yahoo.com/table.csv?a=10&b=5&c=2015&d=11&e=6&f=2015&s=600000.ss"
   //all: http://table.finance.yahoo.com/table.csv?s=600000.ss
 
+  public List<YahooData> parse(String stockCode, InputStream in) throws IOException {
+    Iterable<CSVRecord> records = CSVFormat.RFC4180
+        .withHeader("Date", "Open", "High", "Low", "Close", "Volume", "Adj Close")
+        .withSkipHeaderRecord()
+        .parse(new InputStreamReader(in));
+
+    List<YahooData> yahooDatas = new ArrayList<>();
+
+    for (CSVRecord record : records) {
+      String date = record.get("Date");
+      float open = Float.parseFloat(record.get("Open"));
+      float close = Float.parseFloat(record.get("Close"));
+      float high = Float.parseFloat(record.get("High"));
+      float low = Float.parseFloat(record.get("Low"));
+      float volume = Float.parseFloat(record.get("Volume"));
+      //float adjClose = Float.parseFloat(record.get("Adj Close"));
+      //if volume == 0, then it's not exchanged that day
+      if (volume > 0) {
+        YahooData yahooData = new YahooData(stockCode, date, open, close, high, low, volume);
+        yahooDatas.add(yahooData);
+      }
+    }
+
+    return yahooDatas;
+  }
+
   private List<YahooData> fetch(String stockCode, String url) {
     try (InputStream inputStream = Request.Get(url).execute().returnContent().asStream()) {
-      return YahooExchangeDataParser.parse(stockCode, inputStream);
+      return parse(stockCode, inputStream);
     } catch (Exception e) {
       e.printStackTrace();
     }
