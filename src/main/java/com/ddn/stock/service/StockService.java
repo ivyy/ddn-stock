@@ -1,6 +1,5 @@
 package com.ddn.stock.service;
 
-import com.ddn.stock.domain.Exchange;
 import com.ddn.stock.domain.Stock;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.ddn.stock.service.impl;
 
-import com.ddn.stock.domain.Exchange;
+import com.ddn.stock.domain.YahooData;
 import com.ddn.stock.service.StockExchangeDataImportService;
-import com.ddn.stock.service.YahooStockExchangeDataService;
+import com.ddn.stock.service.YahooDataService;
 import com.ddn.stock.util.YahooExchangeDataParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,11 +28,11 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
   private MongoTemplate mongoTemplate;
 
   @Autowired
-  private YahooStockExchangeDataService yahooStockExchangeDataService;
+  private YahooDataService yahooStockExchangeDataService;
 
   @Override
   public void fromLocalCSV() {
-    mongoTemplate.dropCollection(Exchange.class);
+    mongoTemplate.dropCollection(YahooData.class);
     File file = new File(csvFileFolder);
     if (file.exists() && file.isDirectory()) {
       File[] csvFiles = file.listFiles(new FilenameFilter() {
@@ -45,9 +45,9 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
       for (File csvFile : csvFiles) {
         try (InputStream in = new FileInputStream(csvFile)) {
           String stockCode = csvFile.getName().replace(".csv", "");
-          List<Exchange> exchanges = YahooExchangeDataParser.parse(stockCode, in);
+          List<YahooData> yahooDatas = YahooExchangeDataParser.parse(stockCode, in);
           //TODO: Save it to monogodb
-          mongoTemplate.insert(exchanges, Exchange.class);
+          mongoTemplate.insert(yahooDatas, YahooData.class);
         } catch (IOException ioe) {
           ioe.printStackTrace();
         }
@@ -57,10 +57,10 @@ public class StockExchangeDataImportServiceImpl implements StockExchangeDataImpo
 
   @Override
   public void fromYahoo() {
-    mongoTemplate.dropCollection(Exchange.class);
+    mongoTemplate.dropCollection(YahooData.class);
     for (String stockCode:stockCodeList.trim().split(",")) {
-      List<Exchange> exchanges = yahooStockExchangeDataService.getAllHistoricalData(stockCode);
-      mongoTemplate.insert(exchanges, Exchange.class);
+      List<YahooData> yahooDatas = yahooStockExchangeDataService.getAllHistoricalData(stockCode);
+      mongoTemplate.insert(yahooDatas, YahooData.class);
     }
 
   }

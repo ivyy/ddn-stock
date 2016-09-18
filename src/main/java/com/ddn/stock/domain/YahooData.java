@@ -1,7 +1,7 @@
 package com.ddn.stock.domain;
 
 
-public class Exchange {
+public class YahooData {
   private String id;
   private String stockCode;
   private String date;
@@ -11,7 +11,7 @@ public class Exchange {
   private double low;
   private double volume;
 
-  public Exchange(String stockCode, String date, double open, double close, double high, double low, double volume) {
+  public YahooData(String stockCode, String date, double open, double close, double high, double low, double volume) {
     this.stockCode = stockCode;
     this.date = date;
     this.open = open;

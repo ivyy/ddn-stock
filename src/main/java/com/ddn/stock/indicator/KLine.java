@@ -1,6 +1,6 @@
 package com.ddn.stock.indicator;
 
-import com.ddn.stock.domain.Exchange;
+import com.ddn.stock.domain.YahooData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,30 +8,30 @@ import java.util.stream.Stream;
 
 public class KLine {
 
-  private Exchange[] exchanges;
+  private YahooData[] yahooDatas;
 
-  public KLine(List<Exchange> exchanges) {
-    this.exchanges = exchanges.toArray(new Exchange[0]);
-    Arrays.sort(this.exchanges, (Exchange e1 ,Exchange e2) -> e1.getDate().compareTo(e2.getDate()));
+  public KLine(List<YahooData> yahooDatas) {
+    this.yahooDatas = yahooDatas.toArray(new YahooData[0]);
+    Arrays.sort(this.yahooDatas, (YahooData e1 , YahooData e2) -> e1.getDate().compareTo(e2.getDate()));
   }
 
-  public KLine(Exchange[] exchanges) {
-    this.exchanges = exchanges;
-    Arrays.sort(this.exchanges, (Exchange e1 ,Exchange e2) -> e1.getDate().compareTo(e2.getDate()));
+  public KLine(YahooData[] yahooDatas) {
+    this.yahooDatas = yahooDatas;
+    Arrays.sort(this.yahooDatas, (YahooData e1 , YahooData e2) -> e1.getDate().compareTo(e2.getDate()));
   }
 
   public TimeSeries closePriceTimeSeries() {
-    TimePoint[] timePoints = Stream.of(exchanges)
+    TimePoint[] timePoints = Stream.of(yahooDatas)
         .map(exchange -> new TimePoint(exchange.getDate(), exchange.getClose()))
         .toArray(size -> new TimePoint[size]);
     return new TimeSeries(timePoints);
   }
 
   public int length() {
-    return exchanges.length;
+    return yahooDatas.length;
   }
 
-  public Exchange[] getExchanges() {
-    return exchanges;
+  public YahooData[] getYahooDatas() {
+    return yahooDatas;
   }
 }

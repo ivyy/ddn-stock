@@ -1,6 +1,6 @@
 package com.ddn.stock.util;
 
-import com.ddn.stock.domain.Exchange;
+import com.ddn.stock.domain.YahooData;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
@@ -10,18 +10,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by chenzi on 6/1/2016.
- */
 public class YahooExchangeDataParser {
   //parse from an InputStream
-  public static List<Exchange> parse(String stockCode, InputStream in) throws IOException {
+  public static List<YahooData> parse(String stockCode, InputStream in) throws IOException {
     Iterable<CSVRecord> records = CSVFormat.RFC4180
         .withHeader("Date", "Open", "High", "Low", "Close", "Volume", "Adj Close")
         .withSkipHeaderRecord()
         .parse(new InputStreamReader(in));
 
-    List<Exchange> exchanges = new ArrayList<>();
+    List<YahooData> yahooDatas = new ArrayList<>();
 
     for (CSVRecord record : records) {
       String date = record.get("Date");
@@ -33,12 +30,12 @@ public class YahooExchangeDataParser {
       //float adjClose = Float.parseFloat(record.get("Adj Close"));
       //if volume == 0, then it's not exchanged that day
       if (volume > 0) {
-        Exchange exchange = new Exchange(stockCode, date, open, close, high, low, volume);
-        exchanges.add(exchange);
+        YahooData yahooData = new YahooData(stockCode, date, open, close, high, low, volume);
+        yahooDatas.add(yahooData);
       }
 
     }
 
-    return exchanges;
+    return yahooDatas;
   }
 }
