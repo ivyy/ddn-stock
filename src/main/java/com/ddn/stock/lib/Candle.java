@@ -26,7 +26,7 @@ public class Candle {
     return Math.min(open,close) - low;
   }
 
-  public double shodow() {
+  public double shadow() {
     return upperShadow() + lowerShadow();
   }
 
