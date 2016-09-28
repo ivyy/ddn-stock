@@ -1,4 +1,4 @@
-package com.ddn.stock.integration;
+package com.ddn.stock.test.integration;
 
 import com.ddn.stock.domain.mongo.History;
 import com.ddn.stock.service.ImportService;

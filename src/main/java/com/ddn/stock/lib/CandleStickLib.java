@@ -9,14 +9,19 @@ public class CandleStickLib {
   private double PERCENT = 0.01;
 
   public boolean isDaYangXian(Candle candle) {
-    //上下影线的长度
-    double range = candle.high - candle.low;
-    if (range == 0) return false;
-
+    /*
+      - 开盘价大于收盘价
+      - 实体部分相对于开盘价上涨超过4%
+      - 上影线很短
+      - 下影线很短
+      - 实体部分占75%以上
+     */
     return (candle.close > candle.open)
-        && (candle.close - candle.open) / candle.open > 4 * PERCENT
-        && (candle.high - candle.close) / range < 0.2
-        && (candle.open - candle.low) / range < 0.2;
+        && candle.body() / candle.open > 4 * PERCENT
+        && candle.upperShadow() / candle.range() < 0.2
+        && candle.lowerShadow() / candle.range() < 0.2
+        && candle.body() / candle.range() > 75 * PERCENT
+        ;
   }
 
   public boolean isYangXian(Candle candle) {
@@ -28,17 +33,20 @@ public class CandleStickLib {
   }
 
   public boolean isDaYingXian(Candle candle) {
-    double range = candle.high - candle.low;
-    if (range == 0) return false;
 
     return (candle.close < candle.open)
-        && (candle.close - candle.open) / candle.open < -4 * PERCENT
-        && (candle.high - candle.open) / range < 0.2
-        && (candle.close - candle.low) / range < 0.2;
+        && candle.body() / candle.open > 4 * PERCENT
+        && candle.upperShadow() / candle.range() < 0.2
+        && candle.lowerShadow() / candle.range() < 0.2
+        && candle.body() / candle.range() > 75 * PERCENT
+        ;
   }
 
   public boolean isShiZiXing(Candle candle) {
-    return candle.upperShadow() > 0 && candle.lowerShadow() > 0 && candle.body() / candle.upperShadow() < 1;
+    //上下影线都比实体部分长,并且实体的比例小于当前中间价=(开盘+收盘)/2的1%
+    return candle.upperShadow() / candle.body() > 1
+        && candle.lowerShadow() / candle.body() > 1
+        && candle.body() / ((candle.open + candle.close) / 2) < 0.01;
   }
 
 }
