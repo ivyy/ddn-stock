@@ -66,7 +66,8 @@ public class CandleStickLibUnitTest {
 
     //600519 2016-03-29
     Candle candle6 = new CandleBuilder().high(245.70).open(244.33).low(239.28).close(242.88).build();
-    assertFalse(csLib.doji(candle6));
+    assertTrue(csLib.doji(candle6));
+    assertTrue(csLib.hammer(candle6));
   }
 
   @Test
@@ -116,6 +117,10 @@ public class CandleStickLibUnitTest {
     //600446 2015-09-14
     Candle candle = new CandleBuilder().high(30.78).open(30.00).low(29.82).close(30.11).build();
     assertTrue(csLib.tombDoji(candle));
+
+    //600446 2016-04-13
+    Candle candle1 = new CandleBuilder().high(37.19).open(35.60).low(35.60).close(35.65).build();
+    assertTrue(csLib.tombDoji(candle1));
   }
 
 }

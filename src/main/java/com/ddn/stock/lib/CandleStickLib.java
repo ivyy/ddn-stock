@@ -7,17 +7,30 @@ public class CandleStickLib {
 
   private double PERCENT = 0.01;
 
+  /*
+  -- 大阳线
+  - 开盘价小于收盘价
+  - 实体部分相对于开盘价上涨超过4%
+  - 上影线很短，小于当日价格波动的20%
+  - 下影线很短，小于当日价格波动的20%
+  - 实体部分占75%以上
+ */
   public boolean longRed(Candle candle) {
-    /*
-      -- 大阴线
-      - 开盘价小于收盘价
-      - 实体部分相对于开盘价上涨超过4%
-      - 上影线很短，小于当日价格波动的20%
-      - 下影线很短，小于当日价格波动的20%
-      - 实体部分占75%以上
-     */
     return (candle.close > candle.open)
-        && candle.body() / candle.open > 4 * PERCENT
+        && candle.body() / candle.open >= 4 * PERCENT
+        && candle.upperShadow()  < candle.range() * 0.2
+        && candle.lowerShadow() < candle.range() * 0.2
+        && candle.body() / candle.range() > 75 * PERCENT
+        ;
+  }
+
+  /*
+    - 短阳线
+    实体部分相对小的阳线,小于 4%
+   */
+  public boolean shortRed(Candle candle) {
+    return (candle.close > candle.open)
+        && candle.body() / candle.open < 4 * PERCENT
         && candle.upperShadow()  < candle.range() * 0.2
         && candle.lowerShadow() < candle.range() * 0.2
         && candle.body() / candle.range() > 75 * PERCENT
@@ -43,7 +56,16 @@ public class CandleStickLib {
   public boolean longGreen(Candle candle) {
 
     return (candle.close < candle.open)
-        && candle.body() / candle.open > 4 * PERCENT
+        && candle.body() / candle.open >= 4 * PERCENT
+        && candle.upperShadow() / candle.range() < 0.2
+        && candle.lowerShadow() / candle.range() < 0.2
+        && candle.body() / candle.range() > 75 * PERCENT
+        ;
+  }
+
+  public boolean shortGreen(Candle candle) {
+    return (candle.close < candle.open)
+        && candle.body() / candle.open < 4 * PERCENT
         && candle.upperShadow() / candle.range() < 0.2
         && candle.lowerShadow() / candle.range() < 0.2
         && candle.body() / candle.range() > 75 * PERCENT
@@ -52,10 +74,9 @@ public class CandleStickLib {
 
   //十字星
   public boolean doji(Candle candle) {
-    //上下影线都比实体部分长,
+    //上影线或者下影线比实体部分长,
     //实体的比例小于当前中间价=(开盘+收盘)/2的1%
-    return candle.upperShadow() > candle.body()
-        && candle.lowerShadow() > candle.body()
+    return (candle.upperShadow() > candle.body() || candle.lowerShadow() > candle.body())
         && candle.body() / ((candle.open + candle.close) * 0.5) < 0.01;
   }
 
@@ -95,5 +116,14 @@ public class CandleStickLib {
         ;
   }
 
+  /*
+    -- 星蜡烛图
+    星蜡烛图在反转形态中扮演重要的角色。
+    第一根为长实体
+    第二根为颜色相反的短实体,并且存在跳空(向上或者向下)
+   */
+  public boolean redStar(Candle first, Candle second) {
+
+  }
 
 }
