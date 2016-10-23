@@ -19,7 +19,7 @@ public class MorphiaConfig {
   @Bean
   public Datastore morphiaDataStore() {
     final Morphia morphia = new Morphia();
-    morphia.mapPackage("com.ddn.stock.domain.mongo");
+    morphia.mapPackage("com.ddn.stock.domain.document");
     final Datastore datastore = morphia.createDatastore(new MongoClient(mongodbHost), database);
     //call explicitly to ensure indexes
     datastore.ensureIndexes();

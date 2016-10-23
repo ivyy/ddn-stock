@@ -1,10 +1,14 @@
 package com.ddn.stock.service;
 
-import com.ddn.stock.domain.YahooData;
+import com.ddn.stock.domain.document.Tick;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface YahooDataService {
-  public List<YahooData> getAllHistoricalData(String stockCode);
-  public List<YahooData> getHistoryBetween(String stockCode, String start, String end);
+
+  List<Tick> getAll(String stockCode);
+
+  List<Tick> getFrom(String stockCode, LocalDate startDate);
+
 }

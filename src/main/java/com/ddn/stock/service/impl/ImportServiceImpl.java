@@ -1,16 +1,21 @@
 package com.ddn.stock.service.impl;
 
-import com.ddn.stock.domain.YahooData;
-import com.ddn.stock.domain.mongo.History;
+import com.ddn.stock.domain.document.PowerFactor;
+import com.ddn.stock.domain.document.Stock;
+import com.ddn.stock.domain.document.Tick;
 import com.ddn.stock.service.ImportService;
+import com.ddn.stock.service.SinaDataService;
+import com.ddn.stock.service.StockService;
 import com.ddn.stock.service.YahooDataService;
+import com.ddn.stock.util.CommonUtil;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * this service load data from yahoo and save it into mongodb
@@ -22,43 +27,89 @@ public class ImportServiceImpl implements ImportService {
   private YahooDataService yahooDataService;
 
   @Autowired
-  private Datastore datastore;
+  private SinaDataService sinaDataService;
 
-  private History yahooDataToHistory(YahooData data) {
-    History history = new History();
-    history.setClose(data.getClose());
-    history.setCode(data.getStockCode());
-    history.setDate(data.getDate());
-    history.setHigh(data.getHigh());
-    history.setLow(data.getLow());
-    history.setOpen(data.getOpen());
-    history.setVolume(data.getVolume());
-    return history;
-  }
+  @Autowired
+  private StockService stockService;
+
+  @Autowired
+  private Datastore datastore;
 
   /*
     load all from scratch
    */
   @Override
-  public void fromYahoo(String stockCode) {
-    List<History> histories = yahooDataService.getAllHistoricalData(stockCode)
-        .stream().map(yahooData -> yahooDataToHistory(yahooData)).collect(Collectors.toList());
-    datastore.delete(datastore.createQuery(History.class).field("code").equal(stockCode));
-    datastore.save(histories);
+  public void importDailyTicksFromYahoo(String stockCode) {
+    List<Tick> ticks = yahooDataService.getAll(stockCode);
+    datastore.delete(datastore.createQuery(Tick.class).field("stockCode").equal(stockCode));
+    datastore.save(ticks);
   }
 
   /*
     load data between two date
    */
   @Override
-  public void fromYahoo(String stockCode, String start, String end) {
-    List<History> histories = yahooDataService.getHistoryBetween(stockCode, start, end)
-        .stream().map(yahooData -> yahooDataToHistory(yahooData)).collect(Collectors.toList());
-    Query query = datastore.createQuery(History.class)
-        .field("code").equal(stockCode)
-        .field("date").greaterThanOrEq(start)
-        .field("date").lessThanOrEq(end);
+  public void importDailyTicksFromYahoo(String stockCode, LocalDate startDate) {
+    Stock stock = stockService.findOne(stockCode);
+    if (stock == null) return;
+
+    List<Tick> ticks = yahooDataService.getFrom(stockCode, startDate);
+    Query query = datastore.createQuery(Tick.class)
+        .field("stockCode").equal(stockCode)
+        .field("date").greaterThanOrEq(startDate);
     datastore.delete(query);
-    datastore.save(histories);
+    datastore.save(ticks);
+  }
+
+  @Override
+  public void importPowerFactorFromSina(String stockCode) {
+    //needs to know the initial market day of <stockCode>
+    Stock stock = stockService.findOne(stockCode);
+    if (stock != null) {
+      LocalDate currentDate = LocalDate.now();
+      int currentYear = currentDate.getYear();
+      int currentQuarter = currentDate.getMonthValue() / 3 + 1;
+
+      Date initialDate = stock.getInitialDate();
+      int year = initialDate.getYear() + 1900;
+      int quarter = initialDate.getMonth() / 3 + 1;
+
+      while (year < currentYear || (year == currentYear && quarter <= currentQuarter)) {
+        importPowerFactorFromSina(stockCode, year, quarter);
+        quarter += 1;
+        if (quarter > 4) {
+          quarter = 1;
+          year += 1;
+        }
+      }
+    }
+  }
+
+  @Override
+  public void importPowerFactorFromSina(String stockCode, int year, int quarter) {
+    List<PowerFactor> powerFactorList =
+        sinaDataService.getPowerFactor(stockCode, year, quarter);
+
+    Date startDate = new Date(year, (quarter - 1) * 3 + 1, 1);
+    Date endDate = new Date(year, quarter * 3 + 1, 1);
+    Query query = datastore.createQuery(PowerFactor.class)
+        .field("stockCode").equal(stockCode)
+        .field("date").greaterThanOrEq(startDate)
+        .field("date").lessThan(endDate);
+
+    datastore.delete(query);
+    datastore.save(powerFactorList);
+  }
+
+  @Override
+  public void importFromScratch() {
+    stockService.findAll().stream().forEach(stock -> {
+      //import from yahoo daily ticks
+      importDailyTicksFromYahoo(stock.getCode());
+      //update the stock initial date
+      stockService.fillInitialDate(stock.getCode());
+      //import all the power factor from sina
+      importPowerFactorFromSina(stock.getCode());
+    });
   }
 }

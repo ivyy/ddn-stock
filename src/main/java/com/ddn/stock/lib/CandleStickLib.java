@@ -117,13 +117,17 @@ public class CandleStickLib {
   }
 
   /*
-    -- 星蜡烛图
+    -- 星蜡烛图 - 之一
     星蜡烛图在反转形态中扮演重要的角色。
-    第一根为长实体
-    第二根为颜色相反的短实体,并且存在跳空(向上或者向下)
+    第一根为长阳线实体
+    第二根为绿色的短实体,并且存在跳空
    */
   public boolean redStar(Candle first, Candle second) {
+    return longRed(first) && doji(second) && green(second) && second.open < first.close;
+  }
 
+  public boolean greenStar(Candle first, Candle second) {
+    return longGreen(first) && doji(second) && red(second) && second.open > first.close;
   }
 
 }

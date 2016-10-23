@@ -1,6 +1,6 @@
 package com.ddn.stock.filter;
 
-import com.ddn.stock.domain.mongo.Stock;
+import com.ddn.stock.domain.document.Stock;
 import org.springframework.stereotype.Component;
 
 @Component

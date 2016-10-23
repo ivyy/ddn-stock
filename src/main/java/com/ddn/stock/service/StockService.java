@@ -1,7 +1,8 @@
 package com.ddn.stock.service;
 
-import com.ddn.stock.domain.mongo.Stock;
+import com.ddn.stock.domain.document.Stock;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface StockService {
@@ -10,4 +11,5 @@ public interface StockService {
   List<Stock> findAll();
   void delete(String stockCode);
   void deleteAll();
+  void fillInitialDate(String stockCode);
 }
